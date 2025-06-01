@@ -1,9 +1,17 @@
-# Spark NetCDF Connector
+# NetCDF Spark Parser
 
-This project implements a Spark connector for reading NetCDF files into Spark DataFrames using Apache Spark and Scala.
-This connector uses [NetCDF Java](https://www.unidata.ucar.edu/software/netcdf-java/) to read data from netcdf files.
+[![GitHub stars](https://img.shields.io/github/stars/rejeb/netcdf-spark-parser)](https://github.com/rejeb/netcdf-spark-parser/stargazers)
+[![License](https://img.shields.io/github/license/rejeb/netcdf-spark-parser)](https://github.com/rejeb/netcdf-spark-parser/blob/main/LICENSE)
+[![Scala](https://img.shields.io/badge/Java-11-blue)](https://www.java.com/fr/)
+[![Scala](https://img.shields.io/badge/Scala-2.12%2F2.13-red)](https://www.scala-lang.org/)
+[![Spark](https://img.shields.io/badge/Spark-3.5.x-orange)](https://spark.apache.org/)
 
-## Features
+A Spark connector for efficiently parsing and reading **NetCDF** files at scale using **Apache Spark**. 
+This project leverages the **DataSource V2** API to integrate NetCDF file reading in a distributed and performant way.
+This parser uses [NetCDF Java](https://www.unidata.ucar.edu/software/netcdf-java/) to read data from netcdf files.
+
+---
+## 🚀 Features
 
 - **Custom Schema Support**: Define the schema for NetCDF variables.
 - **Partition Handling**: Automatically manages partitions for large datasets.
@@ -11,32 +19,62 @@ This connector uses [NetCDF Java](https://www.unidata.ucar.edu/software/netcdf-j
 - **Storage Compatibility**: This connector supports reading NetCDF files from:
     - Local file systems (tested).
     - Amazon S3, see [Dataset URLs](https://docs.unidata.ucar.edu/netcdf-java/5.6/userguide/dataset_urls.html) for configuration (tested).
+    - 
 ---
 
-## Requirements
+## 📋 Requirements
 
-- **Java**: Version 11
-- **Apache Spark**: Version 3.x
+- **Java**: Version 11+
+- **Apache Spark**: Version 3.5.x
 - **Scala**: Version 2.12,2.13
 - **Dependency Management**: SBT, Maven, or similar
 - **Unidata repository**: Add Unidata repository, see [Using netCDF-Java Maven Artifacts](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/using_netcdf_java_artifacts.html)
 
 ---
 
-## Getting Started
+## 🧰 Use Cases
+
+- Processing climate and oceanographic data
+- Analyzing multi-dimensional scientific datasets
+- Batch or interactive processing of NetCDF files
+
+## 📖 Usage
+
+Loading data from a NetCDF file into a DataFrame requires that the variables to extract share at least one common dimension.
 
 ### Add Dependency to Your Project
 
-Update your `build.sbt` file with the following configuration:
+To integrate the **NetCDF Spark** connector into your project, add the following dependency to your preferred build tool configuration.
+#### Using SBT
+Add the following line to your file: `build.sbt`
+``` scala
+libraryDependencies += "io.github.rejeb" %% "spark-netcdf" % "1.0.0"
 ```
-libraryDependencies += "io.github.rejeb" %% "spark-netcdf" % "VERSION"
-``` 
+#### Using Maven
+Include the following dependency in the section of your file: `<dependencies>``pom.xml`
+``` xml
+<dependency>
+    <groupId>io.github.rejeb</groupId>
+    <artifactId>spark-netcdf_2.13</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+> **Note**: Change `_2.13` to `_2.12` if your project uses Scala 2.12 instead of 2.13.
+>
 
-Replace `VERSION` with the specific version of the connector.
+#### Using Gradle
+For Gradle, add this dependency to the `dependencies` block of your file: `build.gradle`
+``` groovy
+dependencies {
+    implementation 'io.github.rejeb:spark-netcdf_2.13:1.0.0'
+}
+```
+> **Hint**: Ensure that the Scala version in the artifact matches your project setup (e.g., `_2.12` or `_2.13`).
+>
 
 ---
 
-## Define Your NetCDF Schema
+### Define Your NetCDF Schema
 
 NetCDF requires an explicitly defined schema for variable mapping. Here is an example schema definition:
 ```scala
@@ -50,7 +88,7 @@ StructField("metadata", ArrayType(StringType))
 
 ---
 
-## Load NetCDF Files
+### Load NetCDF Files
 
 Here is how to load a NetCDF file into a DataFrame:
 
@@ -65,8 +103,7 @@ df.show()
 
 ---
 
-## Configuration Options
-
+### Configuration Options
 
 | Option              | Description                                           | Required | Default       |
 |---------------------|-------------------------------------------------------|----------|---------------|
@@ -77,29 +114,19 @@ df.show()
 Example with options:
 
 ```scala
-val df = spark.read .format("netcdf")
-  .schema(schema)
-  .option("path", "/path/to/file.nc")
-  .option("partitionSize", 50000)
-  .option("ignoredDimensions", "latitude,longitude")
-  .load()
+val df = spark
+        .read
+        .format("netcdf")
+        .schema(schema)
+        .option("path", "/path/to/file.nc")
+        .option("partitionSize", 50000)
+        .option("ignoredDimensions", "dim1,dim2")
+        .load()
 ``` 
 
 ---
 
-## Supported Data Types
-
-The following **Spark SQL data types** are supported by the NetCDF connector:
-
-- `FloatType`
-- `StringType`
-- `IntegerType`
-- `ArrayType`
-- `DoubleType`
-
----
-
-## Full Sample Pipeline Example
+### Full Sample Pipeline Example
 
 Here is a complete example:
 ```scala
@@ -110,27 +137,40 @@ StructField("timestamp", StringType),
 StructField("metadata", ArrayType(StringType))
 ))
 
-val df = spark.read.format("netcdf").schema(schema).option("path", "/data/example.nc").load()
+val df = spark
+        .read
+        .format("netcdf")
+        .schema(schema)
+        .option("path", "/data/example.nc")
+        .load()
+
 df.printSchema() df.show()
 ``` 
 
 ---
 
-## Limitations
+## ⚠️ Limitations
 
-- **Schema is Mandatory**: Schema inference is not supported; you must explicitly define the schema.
+- **Schema inference**: Schema inference is not supported; you must explicitly define the schema.
 - **Write Operations**: Currently, writing to NetCDF files is not supported.
-- **Common Dimensions**: Variables must share at least one common dimension for proper partitioning.
+- **Common Dimensions**: Too many shared dimensions, or a large Cartesian product between them, 
+can cause the parser to fail during partitioning and data reading.
 
 ---
 
-## License
+## 🤝 Contributing
 
-This project is licensed under the **Apache License 2.0**.
+Contributions are welcome! To contribute:
+
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -am 'Add my feature'`)
+4. Push to your branch (`git push origin feature/my-feature`)
+5. Create a Pull Request
 
 ---
 
-## Contribution
+## 📄 License
 
-We welcome contributions! Feel free to create an issue or submit a pull request on GitHub to suggest improvements or fix issues.
-```
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+

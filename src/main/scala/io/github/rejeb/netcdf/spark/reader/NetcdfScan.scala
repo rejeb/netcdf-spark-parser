@@ -27,10 +27,11 @@ import ucar.nc2.{Dimension, Variable}
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 
-case class NetcdfScan(variablesList: Array[String] , schema: StructType,
+case class NetcdfScan(variablesList: Array[String], schema: StructType,
                       options: NetcdfDatasourceOptions) extends Scan with Batch with Logging {
   private val maxNumPartitions: Int = 2000
   private val minRowsPerPartition: Int = 20000
+  private val maxRowsPerPartition: Int = 1000000
 
   override def readSchema(): StructType = schema
 
@@ -68,7 +69,7 @@ case class NetcdfScan(variablesList: Array[String] , schema: StructType,
 
   }
 
-  override def createReaderFactory(): PartitionReaderFactory = new NetcdfPartitionReaderFactory(schema, options)
+  override def createReaderFactory(): PartitionReaderFactory = NetcdfPartitionReaderFactory(schema, options)
 
   private def computePartitionSize(dimensions: List[Dimension]): Long = {
     if (options.partitionSize != -1) {
@@ -77,6 +78,8 @@ case class NetcdfScan(variablesList: Array[String] , schema: StructType,
       val rowCount = dimensions.map(_.getLength.toLong).product
       if (rowCount / minRowsPerPartition < maxNumPartitions) {
         minRowsPerPartition
+      } else if (rowCount / maxNumPartitions > maxRowsPerPartition) {
+        maxRowsPerPartition
       } else {
         (rowCount / maxNumPartitions)
       }
