@@ -1,3 +1,5 @@
+[![GitHub stars](https://img.shields.io/github/stars/rejeb/netcdf-spark-parser)](https://github.com/rejeb/netcdf-spark-parser/stargazers)
+
 # Spark NetCDF Connector
 
 This project implements a Spark connector for reading NetCDF files into Spark DataFrames using Apache Spark and Scala.
