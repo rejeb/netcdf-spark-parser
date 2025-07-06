@@ -4,7 +4,7 @@ resolvers +=
 
 javacOptions ++= Seq("-source", "11", "-target", "11")
 ThisBuild / organization := "io.github.rejeb"
-ThisBuild / version := "0.0.2-SNAPSHOT"
+ThisBuild / version := "1.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := Versions.scalaVersion
 ThisBuild / crossScalaVersions := Versions.supportedScalaVersions
 ThisBuild / scmInfo := Some(
@@ -38,7 +38,6 @@ ThisBuild / publishTo := {
   else
     localStaging.value
 }
-
 
 lazy val root = (project in file("."))
   .settings(
