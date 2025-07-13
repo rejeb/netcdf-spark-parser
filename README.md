@@ -48,14 +48,14 @@ To integrate the **NetCDF Spark** connector into your project, add the following
 #### Using SBT
 Add the following line to your file: `build.sbt`
 ``` scala
-libraryDependencies += "io.github.rejeb" %% "spark-netcdf" % "1.0.0"
+libraryDependencies += "io.github.rejeb" %% "netcdf-spark-parser" % "1.0.0"
 ```
 #### Using Maven
 Include the following dependency in the section of your file: `<dependencies>``pom.xml`
 ``` xml
 <dependency>
     <groupId>io.github.rejeb</groupId>
-    <artifactId>spark-netcdf_2.13</artifactId>
+    <artifactId>netcdf-spark-parser_2.13</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -66,7 +66,7 @@ Include the following dependency in the section of your file: `<dependencies>``p
 For Gradle, add this dependency to the `dependencies` block of your file: `build.gradle`
 ``` groovy
 dependencies {
-    implementation 'io.github.rejeb:spark-netcdf_2.13:1.0.0'
+    implementation 'io.github.rejeb:netcdf-spark-parser_2.13:1.0.0'
 }
 ```
 > **Hint**: Ensure that the Scala version in the artifact matches your project setup (e.g., `_2.12` or `_2.13`).
@@ -108,8 +108,8 @@ df.show()
 | Option              | Description                                           | Required | Default       |
 |---------------------|-------------------------------------------------------|----------|---------------|
 | `path`              | Path to the NetCDF file                               | Yes      | None          |
-| `partitionSize`     | Rows per partition to optimize parallelism            | No       | 20,000 rows   |
-| `ignoredDimensions` | Comma-separated list of dimensions to ignore          | No       | None          |
+| `partition.size`     | Rows per partition to optimize parallelism            | No       | 20,000 rows   |
+| `dimensions.to.ignore` | Comma-separated list of dimensions to ignore          | No       | None          |
 
 Example with options:
 
@@ -119,8 +119,8 @@ val df = spark
         .format("netcdf")
         .schema(schema)
         .option("path", "/path/to/file.nc")
-        .option("partitionSize", 50000)
-        .option("ignoredDimensions", "dim1,dim2")
+        .option("partition.size", 50000)
+        .option("dimensions.to.ignore", "dim1,dim2")
         .load()
 ``` 
 
