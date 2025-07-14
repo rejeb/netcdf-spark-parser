@@ -13,9 +13,6 @@ on:
 
 permissions:
   contents: read
-env:
-  REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
-  REPO_PASSWORD: ${{ secrets.REPO_PASSWORD }}
 
 jobs:
   build:
@@ -35,3 +32,10 @@ jobs:
         run: sbt clean +compile
       - name: Run tests
         run: sbt +test
+      - name: Publish central maven
+        env:
+          PGP_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.GPG_SIGNING_KEY }}
+          SONATYPE_USERNAME: ${{ secrets.REPO_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.REPO_PASSWORD }}
+        run: sbt +ci-release

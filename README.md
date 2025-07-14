@@ -14,12 +14,12 @@ This parser uses [NetCDF Java](https://www.unidata.ucar.edu/software/netcdf-java
 ## 🚀 Features
 
 - **Custom Schema Support**: Define the schema for NetCDF variables.
-- **Partition Handling**: Automatically manages partitions for large datasets.
+- **Partition Handling**: Automatically manages partitions for large netcdf files.
 - **Scalable Performance**: Optimized for distributed computing with Spark.
 - **Storage Compatibility**: This connector supports reading NetCDF files from:
     - Local file systems (tested).
     - Amazon S3, see [Dataset URLs](https://docs.unidata.ucar.edu/netcdf-java/5.6/userguide/dataset_urls.html) for configuration (tested).
-    - 
+  
 ---
 
 ## 📋 Requirements
@@ -34,9 +34,10 @@ This parser uses [NetCDF Java](https://www.unidata.ucar.edu/software/netcdf-java
 
 ## 🧰 Use Cases
 
-- Processing climate and oceanographic data
-- Analyzing multi-dimensional scientific datasets
-- Batch or interactive processing of NetCDF files
+- Transform multi dimensional data to tabular form.
+- Processing climate and oceanographic data.
+- Analyzing multi-dimensional scientific datasets.
+- Batch processing of NetCDF files.
 
 ## 📖 Usage
 
